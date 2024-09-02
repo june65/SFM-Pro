@@ -2,12 +2,11 @@ import numpy as np
 import cv2
 from utils import RGB_to_gray
 
-def SIFT(image1, image2):
-    image1 = RGB_to_gray(image1)
-    image2 = RGB_to_gray(image2)
-    diff_conv_layers_1 = Difference_of_Gaussian(image1)
-    Keypoint_location(diff_conv_layers_1)
-    return image1
+def SIFT(image):
+    gray_image = RGB_to_gray(image)
+    diff_conv_layers_1 = Difference_of_Gaussian(gray_image)
+    keypoint = Keypoint_location(diff_conv_layers_1)
+    return keypoint
 
 def Gaussian_filter(filter_size, sigma):
     pad_size = filter_size // 2

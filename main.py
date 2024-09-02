@@ -16,7 +16,8 @@ def main():
     image_1 = imageset[0]
     image_2 = imageset[1]
     
-    keypoint = SIFT(image_1, image_2)
+    keypoint_1 = SIFT(image_1)
+    keypoint_2 = SIFT(image_2)
 
 if __name__ == "__main__":
     main()
