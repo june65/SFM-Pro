@@ -1,6 +1,7 @@
 import argparse
 from utils import ImageLoader
 from feature_extraction import SIFT
+from feature_matching import BF
 parser = argparse.ArgumentParser()
 
 #Data parameters
@@ -13,11 +14,22 @@ datapath = "./data/" + args.dataset+ "/"
 def main():
     #Data loading
     imageset = ImageLoader(datapath)
-    image_1 = imageset[0]
-    image_2 = imageset[1]
-    
-    keypoint_1 = SIFT(image_1)
-    keypoint_2 = SIFT(image_2)
+    images = []
+    keypoints = []
+    descriptors = []
+
+    #Feature extraction
+    for i in range(2):
+        images.append(imageset[i])
+        keypoint, descriptor =SIFT(images[i])
+        keypoints.append(keypoint)
+        descriptors.append(descriptor)
+
+    for i in range(1):
+        for j in range(i+1,2):
+            #Feature matching
+            matches, keypoint_1M, keypoint_2M = BF(keypoints[i], keypoints[j], descriptors[i], descriptors[j], images[i], images[j])
+
 
 if __name__ == "__main__":
     main()

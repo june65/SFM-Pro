@@ -3,10 +3,23 @@ import cv2
 from utils import RGB_to_gray
 
 def SIFT(image):
-    gray_image = RGB_to_gray(image)
-    diff_conv_layers_1 = Difference_of_Gaussian(gray_image)
-    keypoint = Keypoint_location(diff_conv_layers_1)
-    return keypoint
+    sift = cv2.SIFT_create()
+    keypoint, descriptor = sift.detectAndCompute(image, None)
+    return keypoint, descriptor
+
+'''
+def SIFT(image_1,image_2):
+    gray_image_1 = RGB_to_gray(image_1)
+    diff_conv_layers_1 = Difference_of_Gaussian(gray_image_1)
+    keypoint_1 = Keypoint_location(diff_conv_layers_1)
+    np.save('assets/feature_extraction_1.npy', keypoint_1)
+
+    gray_image_2 = RGB_to_gray(image_2)
+    diff_conv_layers_2 = Difference_of_Gaussian(gray_image_2)
+    keypoint_2 = Keypoint_location(diff_conv_layers_2)
+    np.save('assets/feature_extraction_2.npy', keypoint_2)
+
+    return keypoint_1, keypoint_2
 
 def Gaussian_filter(filter_size, sigma):
     pad_size = filter_size // 2
@@ -49,14 +62,14 @@ def Difference_of_Gaussian(image):
         for j in range(1,5):
             diff_gaussian = gaussian_conv[i][j] - gaussian_conv[i][j-1]
             diff_gaussian_layer.append(diff_gaussian)
-            '''
+            
             #print gaussian map
             max_val = np.max(diff_gaussian)
             print_img = ((diff_gaussian / max_val) * 255).astype(np.uint8)
             cv2.imshow('diff_gaussian',print_img)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
-            '''
+            
         diff_gaussian_conv.append(diff_gaussian_layer)
 
     return diff_gaussian_conv
@@ -91,3 +104,4 @@ def Keypoint_location(layers):
             keypoint_in_conv.append(sum_layer)
 
     return keypoint_in_conv[0]
+'''
