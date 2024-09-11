@@ -19,7 +19,7 @@ def main():
     keypoints = []
     descriptors = []
     threshold = 2.0e-4
-    max_iter = 1
+    max_iter = 5000
 
     #Feature extraction
     for i in range(2):
@@ -34,7 +34,7 @@ def main():
             matches, keypoint_1M, keypoint_2M = BF(keypoints[i], keypoints[j], descriptors[i], descriptors[j], images[i], images[j])
             
             #Essential matrix
-            FivePoint(matches, keypoint_1M, keypoint_2M, threshold, max_iter)
+            F_matrix = FivePoint(matches, keypoint_1M, keypoint_2M, threshold, max_iter)
             
             
 
