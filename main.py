@@ -2,6 +2,7 @@ import argparse
 from utils import ImageLoader
 from feature_extraction import SIFT
 from feature_matching import BF
+from essential_matrix import FivePoint
 parser = argparse.ArgumentParser()
 
 #Data parameters
@@ -17,6 +18,8 @@ def main():
     images = []
     keypoints = []
     descriptors = []
+    threshold = 2.0e-4
+    max_iter = 1
 
     #Feature extraction
     for i in range(2):
@@ -29,7 +32,11 @@ def main():
         for j in range(i+1,2):
             #Feature matching
             matches, keypoint_1M, keypoint_2M = BF(keypoints[i], keypoints[j], descriptors[i], descriptors[j], images[i], images[j])
-
+            
+            #Essential matrix
+            FivePoint(matches, keypoint_1M, keypoint_2M, threshold, max_iter)
+            
+            
 
 if __name__ == "__main__":
     main()

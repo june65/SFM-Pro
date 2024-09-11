@@ -16,4 +16,4 @@ def BF(keypoint_1, keypoint_2, descriptor_1, descriptor_2, image_1, image_2):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     '''
-    return matches, keypoint_1M, keypoint_2M
+    return np.array(matches), keypoint_1M, keypoint_2M
