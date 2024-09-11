@@ -3,6 +3,7 @@ from utils import ImageLoader
 from feature_extraction import SIFT
 from feature_matching import BF
 from essential_matrix import FivePoint, CameraMatrix
+from triangulation import Triangulation
 parser = argparse.ArgumentParser()
 
 #Data parameters
@@ -19,7 +20,7 @@ def main():
     keypoints = []
     descriptors = []
     threshold = 2.0e-4
-    max_iter = 5000
+    max_iter = 1000
     
     #Feature extraction
     for i in range(2):
@@ -38,6 +39,9 @@ def main():
             
             #Camera matrix
             camera_matrix = CameraMatrix(F_matrix, keypoint_1M, datapath)
+
+            #Triangulation
+            initial_geometry = Triangulation(images[i], keypoint_1M, keypoint_2M, camera_matrix, datapath)
 
 if __name__ == "__main__":
     main()

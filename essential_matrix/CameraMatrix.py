@@ -41,4 +41,4 @@ def CameraMatrix(fundamental_matrix, keypoint_1M, datapath):
             print(camera)
             result_camera = camera
 
-    return camera_matrix
+    return result_camera
