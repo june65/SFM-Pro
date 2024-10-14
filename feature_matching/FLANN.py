@@ -2,24 +2,13 @@ import numpy as np
 import cv2
 from utils import RGB_to_gray
 
-def BF(method, threshold_knn, keypoint_1, keypoint_2, descriptor_1, descriptor_2, image_1, image_2, K_inv):
+def FLANN(method, keypoint_1, keypoint_2, descriptor_1, descriptor_2, image_1, image_2, K_inv):
 
-    if method == "NORM":
-        bf = cv2.BFMatcher(cv2.NORM_L2, crossCheck=True)
-        matches = bf.match(descriptor_1, descriptor_2)
-        matches = sorted(matches, key=lambda x: x.distance)
+    index_params = dict(algorithm=cv2.FLANN_INDEX_LSH, table_number=6, key_size=12, multi_probe_level=1)
 
-    if method == "KNN":
-        bf = cv2.BFMatcher()
-        matches = bf.knnMatch(descriptor_1, descriptor_2, k=2)
-        good = []
-        good_print = []
-        for m,n in matches:
-            if m.distance < threshold_knn*n.distance:
-                good.append(m)
-                good_print.append([m])
-        good = sorted(good, key=lambda x: x.distance)
-        matches = good
+    search_params = dict(checks=50)
+    flann = cv2.FlannBasedMatcher(index_params, search_params)
+    matches = flann.knnMatch(descriptor_1, descriptor_2, k=2)
 
     keypoint_1M, keypoint_2M, camerapoint_1M, camerapoint_2M = Camera_coordinate(keypoint_1, keypoint_2, matches, K_inv)
 

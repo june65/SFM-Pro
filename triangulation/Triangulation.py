@@ -32,6 +32,7 @@ def Triangulation(image_1, keypoint_1M, keypoint_2M, camera_matrix, datapath):
         points.append(point)
         color = image_1[int(keypoint_1M[k][1]), int(keypoint_2M[k][0])]
         colors.append(color)
+        
     points = np.array(points)
     X = points[:,0]
     Y = points[:,1]
