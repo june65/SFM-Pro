@@ -33,7 +33,7 @@ def FivePoint(matches, camerapoint_1M, camerapoint_2M, threshold, max_iter):
             if maxpoint < point:
                 maxpoint = point
                 maxpoint_E = flag_E
-    print(maxpoint_E)
-    print(maxpoint)
+    print('Essential Matrix :', maxpoint_E)
+    print('Inlinear Number :', maxpoint)
 
     return maxpoint_E

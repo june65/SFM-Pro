@@ -46,8 +46,10 @@ def CameraMatrix(fundamental_matrix, camerapoint_1M, camerapoint_2M):
                 camera_num += 1
 
         if camera_num > max_camera_num:
-            result_camera = camera_num
+            max_camera_num = camera_num
             max_camera = camera
 
+    print('Essential Matrix :', max_camera)
+    print('Inlinear Number :', max_camera_num)
 
     return max_camera

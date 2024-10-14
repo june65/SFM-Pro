@@ -44,20 +44,20 @@ def main():
 
     for i in range(1):
         for j in range(i+1,2):
-            #Feature Matching
+            print('---------------------1 Feature Matching---------------------')
             if Matching_method == "FLANN":
                 matches, keypoint_1M, keypoint_2M, camerapoint_1M, camerapoint_2M = FLANN(Matching_method, keypoints[i], keypoints[j], descriptors[i], descriptors[j], images[i], images[j], K_inv)
             else:
                 matches, keypoint_1M, keypoint_2M, camerapoint_1M, camerapoint_2M = BF(Matching_method, threshold_knn, keypoints[i], keypoints[j], descriptors[i], descriptors[j], images[i], images[j], K_inv)
             
-            #Essential Matrix
+            print('---------------------#2 FivePoint Algorithm---------------------')
             E_matrix = FivePoint(matches, camerapoint_1M, camerapoint_2M, threshold, max_iter)
             
-            #Camera Matrix
+            print('---------------------#3 Camera Matrix---------------------')
             camera_matrix = CameraMatrix(E_matrix, camerapoint_1M, camerapoint_2M)
 
-            #Triangulation
-            initial_geometry = Triangulation(images[i], keypoint_1M, keypoint_2M, camera_matrix, datapath)
+            print('---------------------#4 Triangulation---------------------')
+            initial_geometry = Triangulation(images[i], camerapoint_1M, camerapoint_2M, keypoint_1M, keypoint_2M, camera_matrix)
 
 if __name__ == "__main__":
     main()

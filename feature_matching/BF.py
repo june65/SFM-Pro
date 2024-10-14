@@ -20,15 +20,17 @@ def BF(method, threshold_knn, keypoint_1, keypoint_2, descriptor_1, descriptor_2
                 good_print.append([m])
         good = sorted(good, key=lambda x: x.distance)
         matches = good
+        
+    print('Matches Number :', len(matches))
 
     keypoint_1M, keypoint_2M, camerapoint_1M, camerapoint_2M = Camera_coordinate(keypoint_1, keypoint_2, matches, K_inv)
-
+    '''
     img_matches = cv2.drawMatches(image_1, keypoint_1, image_2, keypoint_2, matches, None, flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
     resized_img = cv2.resize(img_matches, (0, 0), fx=0.5, fy=0.5)
     cv2.imshow('BF_matches',resized_img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    
+    '''
     return np.array(matches), keypoint_1M, keypoint_2M, camerapoint_1M, camerapoint_2M
 
 
