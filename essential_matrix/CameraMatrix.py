@@ -1,16 +1,7 @@
 import numpy as np
 
-def compute_depth(X, P):
-    m3 = P[2, 2]
-    T = P[2, 3] 
-    sign_det_M = np.sign(np.linalg.det(P[:, :3])) 
-    w = (P @ X)[2] 
-    depth_value = (sign_det_M * w) / (T * m3)
-    return depth_value
+def CameraMatrix(fundamental_matrix, camerapoint_1M, camerapoint_2M):
 
-def CameraMatrix(fundamental_matrix, keypoint_1M, datapath):
-
-    K = np.loadtxt(datapath+'K.txt')
     W = np.array([[0.0, -1.0, 0.0],
      [1.0, 0.0, 0.0],
      [0.0, 0.0, 1.0]])
@@ -24,21 +15,39 @@ def CameraMatrix(fundamental_matrix, keypoint_1M, datapath):
         np.column_stack((U @ W.T @ Vt, -U[:, 2])) 
     ])
     
-    result_camera = []
-
+    max_camera = []
+    max_camera_num = 0
     for camera in camera_matrix:
-        is_valid = True
-        for k in range(len(keypoint_1M)):
-            x1 = np.array([*keypoint_1M[k], 1])
-            x1 = K @ x1 
-            X = np.array([*x1, 1]) 
-            depth = compute_depth(X, camera)
-            if depth < 0:
-                is_valid = False
+        camera_num = 0
+        Rt0 = np.hstack((np.eye(3), np.zeros((3, 1))))
+        p1t = Rt0[0,:]
+        p2t = Rt0[1,:]
+        p3t = Rt0[2,:]
 
-        if is_valid:
-            print("Optimal camera pose found:")
-            print(camera)
-            result_camera = camera
+        result_camera = camera
+        q1t = result_camera[0,:]
+        q2t = result_camera[1,:]
+        q3t = result_camera[2,:]
 
-    return result_camera
+        for k in range(len(camerapoint_1M[0,:])):
+                
+            x1 = camerapoint_1M[0,k]
+            y1 = camerapoint_1M[1,k]
+            x2 = camerapoint_2M[0,k]
+            y2 = camerapoint_2M[1,k]
+
+            A = np.array([x1 * p3t - p1t, y1 * p3t - p2t, x2 * q3t - q1t, y2 * q3t - q2t])
+            
+            _, _, point_vector = np.linalg.svd(A)
+            point = point_vector[-1, :] 
+            point /= point[-1]
+
+            if (result_camera@point.T)[2] > 0:
+                camera_num += 1
+
+        if camera_num > max_camera_num:
+            result_camera = camera_num
+            max_camera = camera
+
+
+    return max_camera
