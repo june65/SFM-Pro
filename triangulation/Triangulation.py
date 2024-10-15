@@ -1,8 +1,9 @@
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
+import pandas as pd
 
-def Triangulation(image_1, camerapoint_1M, camerapoint_2M, keypoint_1M, keypoint_2M, camera_matrix, inlier_TF):
+def Triangulation(image_1, camerapoint_1M, camerapoint_2M, keypoint_1M, keypoint_2M, camera_matrix, inlier_TF, inlinear):
 
     main_camera = np.eye(4)
     Rt0 = main_camera[:3]
@@ -17,6 +18,7 @@ def Triangulation(image_1, camerapoint_1M, camerapoint_2M, keypoint_1M, keypoint
     q3t = result_camera[2,:]
     colors = []
     points = []
+    new_inlinear = []
     for k in range(len(camerapoint_1M[0,:])):
 
         if inlier_TF[k]:
@@ -33,14 +35,22 @@ def Triangulation(image_1, camerapoint_1M, camerapoint_2M, keypoint_1M, keypoint
 
             if (result_camera@point.T)[2] > 0:
 
-                points.append(point)
+                points.append(point[:3])
                 color = image_1[int(keypoint_1M[k][1]), int(keypoint_1M[k][0])]
                 colors.append(color)
+                new_inlinear.append(inlinear[k])
 
     points = np.array(points)
     colors = np.array(colors)
+    new_inlinear = np.array(new_inlinear)
+
+    point_cloud = np.concatenate((points, colors), axis=1)
+    point_cloud = np.concatenate((point_cloud, new_inlinear.reshape(-1, 1)), axis=1)
+    df = pd.DataFrame(point_cloud, columns=['x','y','z','r', 'g', 'b','inlinear_idx'])
+    df.to_csv('./result/two_view_keypoints.csv', mode='w')
+
+    '''
     colors = colors / 255.0
-    
     X = points[:,0]
     Y = points[:,1]
     Z = points[:,2]
@@ -50,8 +60,8 @@ def Triangulation(image_1, camerapoint_1M, camerapoint_2M, keypoint_1M, keypoint
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
-
     plt.title("3D Reconstructed Points")
     plt.show()
+    '''
     
-    return points, colors
+    return points, colors, new_inlinear

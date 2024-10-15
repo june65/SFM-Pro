@@ -37,6 +37,7 @@ def FivePoint(matches, camerapoint_1M, camerapoint_2M, threshold, max_iter):
                     inlinear.append(k)
                 else:
                     inlinear_TF.append(False)
+                    inlinear.append(-1)
 
             if maxpoint < point:
                 maxpoint = point
@@ -46,4 +47,4 @@ def FivePoint(matches, camerapoint_1M, camerapoint_2M, threshold, max_iter):
     print('Essential Matrix :', maxpoint_E)
     print('Inlinear Number :', maxpoint)
 
-    return maxpoint_E, maxinlinear_TF, inlinear
+    return maxpoint_E, maxinlinear_TF, maxinlinear
