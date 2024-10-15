@@ -51,13 +51,13 @@ def main():
         matches, keypoint_1M, keypoint_2M, camerapoint_1M, camerapoint_2M = BF(Matching_method, threshold_knn, keypoints[First], keypoints[Second], descriptors[First], descriptors[Second], images[First], images[Second], K_inv)
     
     print('---------------------#2 FivePoint Algorithm---------------------')
-    E_matrix = FivePoint(matches, camerapoint_1M, camerapoint_2M, threshold, max_iter)
+    E_matrix, inlinear_TF, inlinear = FivePoint(matches, camerapoint_1M, camerapoint_2M, threshold, max_iter)
     
     print('---------------------#3 Camera Matrix---------------------')
-    camera_matrix = CameraMatrix(E_matrix, camerapoint_1M, camerapoint_2M)
+    camera_matrix = CameraMatrix(E_matrix, camerapoint_1M, camerapoint_2M, inlinear_TF)
 
     print('---------------------#4 Triangulation---------------------')
-    initial_geometry = Triangulation(images[First], camerapoint_1M, camerapoint_2M, keypoint_1M, keypoint_2M, camera_matrix)
+    initial_geometry = Triangulation(images[First], camerapoint_1M, camerapoint_2M, keypoint_1M, keypoint_2M, camera_matrix, inlinear_TF)
 
 if __name__ == "__main__":
     main()
