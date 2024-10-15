@@ -30,7 +30,7 @@ def Triangulation(image_1, camerapoint_1M, camerapoint_2M, keypoint_1M, keypoint
         point = point_vector[-1, :] 
         point /= point[-1]
 
-        if point[2] > 0 and (result_camera@point.T)[2] > 0:
+        if (result_camera@point.T)[2] > 0:
 
             points.append(point)
             color = image_1[int(keypoint_1M[k][1]), int(keypoint_1M[k][0])]

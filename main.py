@@ -8,7 +8,7 @@ from triangulation import Triangulation
 parser = argparse.ArgumentParser()
 
 #Data parameters
-parser.add_argument('--dataset', default='data_2_sfm', help='data name')
+parser.add_argument('--dataset', default='data_30', help='data name')
 
 args = parser.parse_args()
 
@@ -36,28 +36,28 @@ def main():
     max_iter = 1000
     
     #Feature Extraction
-    for i in range(2):
+    for i in range(5):
         images.append(imageset[i])
         keypoint, descriptor =SIFT(images[i])
         keypoints.append(keypoint)
         descriptors.append(descriptor)
 
-    for i in range(1):
-        for j in range(i+1,2):
-            print('---------------------1 Feature Matching---------------------')
-            if Matching_method == "FLANN":
-                matches, keypoint_1M, keypoint_2M, camerapoint_1M, camerapoint_2M = FLANN(Matching_method, keypoints[i], keypoints[j], descriptors[i], descriptors[j], images[i], images[j], K_inv)
-            else:
-                matches, keypoint_1M, keypoint_2M, camerapoint_1M, camerapoint_2M = BF(Matching_method, threshold_knn, keypoints[i], keypoints[j], descriptors[i], descriptors[j], images[i], images[j], K_inv)
-            
-            print('---------------------#2 FivePoint Algorithm---------------------')
-            E_matrix = FivePoint(matches, camerapoint_1M, camerapoint_2M, threshold, max_iter)
-            
-            print('---------------------#3 Camera Matrix---------------------')
-            camera_matrix = CameraMatrix(E_matrix, camerapoint_1M, camerapoint_2M)
+    First = 2
+    Second = 3
+    print('---------------------1 Feature Matching---------------------')
+    if Matching_method == "FLANN":
+        matches, keypoint_1M, keypoint_2M, camerapoint_1M, camerapoint_2M = FLANN(Matching_method, keypoints[First], keypoints[Second], descriptors[First], descriptors[Second], images[First], images[Second], K_inv)
+    else:
+        matches, keypoint_1M, keypoint_2M, camerapoint_1M, camerapoint_2M = BF(Matching_method, threshold_knn, keypoints[First], keypoints[Second], descriptors[First], descriptors[Second], images[First], images[Second], K_inv)
+    
+    print('---------------------#2 FivePoint Algorithm---------------------')
+    E_matrix = FivePoint(matches, camerapoint_1M, camerapoint_2M, threshold, max_iter)
+    
+    print('---------------------#3 Camera Matrix---------------------')
+    camera_matrix = CameraMatrix(E_matrix, camerapoint_1M, camerapoint_2M)
 
-            print('---------------------#4 Triangulation---------------------')
-            initial_geometry = Triangulation(images[i], camerapoint_1M, camerapoint_2M, keypoint_1M, keypoint_2M, camera_matrix)
+    print('---------------------#4 Triangulation---------------------')
+    initial_geometry = Triangulation(images[First], camerapoint_1M, camerapoint_2M, keypoint_1M, keypoint_2M, camera_matrix)
 
 if __name__ == "__main__":
     main()

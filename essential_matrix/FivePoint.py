@@ -27,7 +27,7 @@ def FivePoint(matches, camerapoint_1M, camerapoint_2M, threshold, max_iter):
                 x1 = camerapoint_1M[:, k]
                 x2 = camerapoint_2M[:, k]
                 error = np.dot(x2.T, np.dot(flag_E, x1))
-                if error < threshold:
+                if error < threshold and error > 0:
                     point += 1
 
             if maxpoint < point:

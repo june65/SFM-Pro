@@ -3,7 +3,7 @@ import cv2
 from utils import RGB_to_gray
 
 def SIFT(image):
-    sift = cv2.SIFT_create()
+    sift = cv2.SIFT_create(contrastThreshold=0.01, edgeThreshold=10)
     keypoint, descriptor = sift.detectAndCompute(image, None)
     return keypoint, descriptor
 
