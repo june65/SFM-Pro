@@ -1,1 +1,1 @@
-from .Triangulation import Triangulation
+from .Triangulation import Triangulation, Triangulation_G
