@@ -5,8 +5,8 @@ from utils import ImageLoader
 from feature_extraction import SIFT
 from feature_matching import BF, FLANN
 from essential_matrix import FivePoint, CameraMatrix
-from triangulation import Triangulation, Triangulation_G
-from growing_step import ThreePoint
+from triangulation import Triangulation, Triangulation_G, Points_visual
+from growing_step import ThreePoint, Bundle
 parser = argparse.ArgumentParser()
 
 #Data parameters
@@ -30,7 +30,7 @@ def main():
 
     #Feature Matching
     Matching_method = "KNN" #NORM, KNN, FLANN
-    threshold_knn = 0.85
+    threshold_knn = 0.75
     kdtree_flann = 1
 
     #Essential Matrix
@@ -38,9 +38,8 @@ def main():
     fivepoint_max_iter = 2000
 
     #Growing Step
-    threepoint_threshold =  1.0e-3
-    threepoint_max_iter = 5000#5000
-
+    threepoint_threshold = 1.0e-2
+    threepoint_max_iter = 1000
     
     print('---------------------#0 Feature Extraction---------------------')
     for i in tqdm(range(5)):
@@ -48,6 +47,13 @@ def main():
         keypoint, descriptor =SIFT(images[i])
         keypoints.append(keypoint)
         descriptors.append(descriptor)
+
+    all_points = []
+    all_colors = []
+    all_point3d_idx = []
+    all_camera_matrix = [np.eye(4)[:3]]
+    all_keypoint1 = []
+    all_keypoint2 = []
 
     First = 2
     Second = 3
@@ -64,8 +70,15 @@ def main():
     initial_camera_matrix = CameraMatrix(E_matrix, camerapoint_1M, camerapoint_2M, inlinear_TF)
 
     print('---------------------#4 Triangulation---------------------')
-    initial_point, initial_color, initial_inlinear = Triangulation(images[First], camerapoint_1M, camerapoint_2M, keypoint_1M, keypoint_2M, initial_camera_matrix, inlinear_TF, inlinear)
+    initial_point, initial_color, initial_inlinear, initial_point3d_idx = Triangulation(images[First], camerapoint_1M, camerapoint_2M, keypoint_1M, keypoint_2M, initial_camera_matrix, inlinear_TF, inlinear)
     
+    all_points.append(initial_point)
+    all_colors.append(initial_color)
+    all_point3d_idx.append(initial_point3d_idx)
+    all_camera_matrix.append(initial_camera_matrix)
+    all_keypoint1.append(keypoint_1M)
+    all_keypoint2.append(keypoint_2M)
+
     print('---------------------#5 ThreePoint Algorithm---------------------')
     Third = 4
     if Matching_method == "FLANN":
@@ -75,7 +88,23 @@ def main():
     
     new_camera_matrix = ThreePoint(matches, next_matches, initial_inlinear, initial_point, next_camerapoint_2M, threepoint_threshold, threepoint_max_iter)
     
-    next_point, next_color, next_inlinear = Triangulation_G(images[Second], next_camerapoint_1M, next_camerapoint_2M, next_keypoint_1M, next_keypoint_2M, new_camera_matrix, initial_camera_matrix)
+    next_point, next_color, next_point3d_idx = Triangulation_G(images[Second], next_camerapoint_1M, next_camerapoint_2M, next_keypoint_1M, next_keypoint_2M, new_camera_matrix, initial_camera_matrix)
+
+    all_points.append(next_point)
+    all_colors.append(next_color)
+    all_point3d_idx.append(next_point3d_idx)
+    all_camera_matrix.append(new_camera_matrix)
+    all_keypoint1.append(next_keypoint_1M)
+    all_keypoint2.append(next_keypoint_2M)
+    
+    Points_visual(all_points, all_colors, all_point3d_idx, all_keypoint1, "Before_Bundle")
+
+    print('---------------------#6 Bundle Adjustment---------------------')
+    new_all_points = Bundle(all_points, all_point3d_idx, all_camera_matrix, all_keypoint1, all_keypoint2, K)
+
+    Points_visual(new_all_points, all_colors, all_point3d_idx, all_keypoint1, "After_Bundle")
+     
+
 
 if __name__ == "__main__":
     main()
