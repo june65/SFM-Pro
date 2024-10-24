@@ -48,7 +48,7 @@ def ThreePoint(matches, next_matches, inlinear, initial_point, next_camerapoint_
                     point = point[:2]/point[2]
                     #a_print = point.T
                     #a_print2 = next_camerapoint_2M[:2, double_matched_points[k,0]].T
-                    error = np.sum((point.T - next_camerapoint_2M[:2, double_matched_points[k,0]].T)**2)
+                    error = np.sum((point.T - next_camerapoint_2M[:2, double_matched_points[k,2]].T)**2)
                     if error < threepoint_threshold:
                         sum += 1
 

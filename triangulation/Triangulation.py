@@ -82,10 +82,6 @@ def Triangulation_G(image_1, camerapoint_1M, camerapoint_2M, keypoint_1M, keypoi
     #camera_matrix_inv = np.linalg.inv(last_camera_matrix)
     #result_camera = (camera_matrix_inv @ np.vstack((camera_matrix, [0, 0, 0, 1])))[:3]
 
-    
-    print('result_camera Matrix :', result_camera)
-
-
     p1t = Rt0[0,:]
     p2t = Rt0[1,:]
     p3t = Rt0[2,:]
