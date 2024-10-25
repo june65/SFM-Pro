@@ -7,8 +7,32 @@ import matlab.engine
 eng = matlab.engine.start_matlab()
 eng.addpath(r'./data/Newfunctions', nargout=0)
 
-def Bundle(all_points, all_point3d_idx, all_camera_matrix, all_keypoint1, all_keypoint2, K):
+def Bundle(all_points, all_point3d_idx, all_camera_matrix, all_keypoint1, all_keypoint2, all_identical_points, K):
 
+    all_xidx = []
+    samegroup = []
+    number_idx = 0
+    for i in range(len(all_keypoint1)):
+        x_idx = [-1 for _ in range(len(all_keypoint1[i]))]
+        flat_samegroup = np.array(samegroup).flatten()
+        for j, index in enumerate(all_point3d_idx[i]):
+            if i>0:
+                if index in all_identical_points[i-1][:,1].tolist():
+                    point_index = all_identical_points[i-1][:,1].tolist().index(index)
+                    matched_point = all_xidx[-1][0][point_index]
+                    if matched_point != -1:
+                        if not matched_point in flat_samegroup:
+                            samegroup.append([matched_point, np.int64(j + number_idx + 1)])
+                        else :
+                            for row in samegroup:
+                                if index in row:
+                                    row.append(np.int64(j + number_idx + 1))
+            x_idx[index] = j + number_idx + 1
+        x_idx = np.array(x_idx).reshape(1, -1)
+        all_xidx.append(x_idx)
+        number_idx += len(all_point3d_idx[i])
+    flat_samegroup = np.array(samegroup[0]).flatten()
+    #### 초기 설정
     x = np.array([])
     for i in range(len(all_camera_matrix)):
         R = all_camera_matrix[i][:, :3]
@@ -41,7 +65,13 @@ def Bundle(all_points, all_point3d_idx, all_camera_matrix, all_keypoint1, all_ke
     for i in range(len(all_keypoint2)):
         x_idx = [-1 for _ in range(len(all_keypoint2[i]))]
         for j, index in enumerate(all_point3d_idx[i]):
-            x_idx[index] = j + number_idx + 1 #matlab array call +1
+            flag = j + number_idx + 1
+            if flag in flat_samegroup:
+                for row in samegroup:
+                    if index in row:
+                        x_idx[index] = min(row)
+            else:
+                x_idx[index] = j + number_idx + 1 #matlab array call +1
         all_keypoint2_T = all_keypoint2[i].T
         x_idx = np.array(x_idx).reshape(1, -1)
         point2d_vec = np.vstack((all_keypoint2_T, x_idx))

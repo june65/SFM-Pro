@@ -22,7 +22,7 @@ def Points_visual(all_points, all_colors, all_point3d_idx, all_keypoint1, filena
     point_cloud = np.concatenate((point_cloud, zero_point3d_idx.reshape(-1, 1)), axis=1)
     df = pd.DataFrame(point_cloud, columns=['x','y','z','r', 'g', 'b','inlinear_idx'])
     df.to_csv('./result/'+filename+'.csv', mode='w')
-
+    '''
     zero_color = zero_color / 255.0
     X = zero_point[:,0]
     Y = zero_point[:,1]
@@ -33,6 +33,6 @@ def Points_visual(all_points, all_colors, all_point3d_idx, all_keypoint1, filena
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
-
     plt.title("3D Reconstructed Points")
     plt.show()
+    '''

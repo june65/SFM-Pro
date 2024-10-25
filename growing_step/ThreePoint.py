@@ -20,6 +20,7 @@ def ThreePoint(matches, next_matches, inlinear, initial_point, next_camerapoint_
     for i in range(len(next_query_idx)):
         if next_query_idx[i] in np.array(train_idx)[inlinear].tolist():
             double_matched_points.append([np.array(train_idx)[inlinear].tolist().index(next_query_idx[i]), train_idx.index(next_query_idx[i]), i]) # idx[3d_point, match1, match2]
+            
     double_matched_points = np.array(double_matched_points)
 
     print("Matching points in three image:",{len(double_matched_points)})
@@ -46,8 +47,6 @@ def ThreePoint(matches, next_matches, inlinear, initial_point, next_camerapoint_
                     point_4d = np.concatenate((initial_point[double_matched_points[k,0]].T,np.array([1])), axis=0)
                     point = P@point_4d
                     point = point[:2]/point[2]
-                    #a_print = point.T
-                    #a_print2 = next_camerapoint_2M[:2, double_matched_points[k,0]].T
                     error = np.sum((point.T - next_camerapoint_2M[:2, double_matched_points[k,2]].T)**2)
                     if error < threepoint_threshold:
                         sum += 1
@@ -55,8 +54,17 @@ def ThreePoint(matches, next_matches, inlinear, initial_point, next_camerapoint_
                 if max_sum < sum:
                     max_sum = sum
                     max_sum_P = P
+    '''
+    exist_TF = []
+    for i in range(next_matches):
+        if i in double_matched_points[:,2]:
+            exist_TF.append(True)
+        else:
+            exist_TF.append(False)
+    '''       
+    identical_points = double_matched_points[:,-2:]
 
     print('Camera Matrix :', max_sum_P)
     print('Inlinear Number :', max_sum)
 
-    return max_sum_P
+    return max_sum_P, identical_points

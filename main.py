@@ -54,6 +54,7 @@ def main():
     all_camera_matrix = [np.eye(4)[:3]]
     all_keypoint1 = []
     all_keypoint2 = []
+    all_identical_points = []
 
     First = 2
     Second = 3
@@ -80,7 +81,7 @@ def main():
     all_keypoint2.append(keypoint_2M)
 
     print('---------------------#5 ThreePoint Algorithm---------------------')
-    orders = [4,5,6,7,8,9,10]
+    orders = [4,5]
     
     for Third in orders:
         print('Matched images :', {Second,Third})
@@ -90,7 +91,7 @@ def main():
         else:
             next_matches, next_keypoint_1M, next_keypoint_2M, next_camerapoint_1M, next_camerapoint_2M = BF(Matching_method, threshold_knn, keypoints[Second], keypoints[Third], descriptors[Second], descriptors[Third], images[Second], images[Third], K_inv)
         
-        new_camera_matrix = ThreePoint(initial_matches, next_matches, initial_inlinear, initial_point, next_camerapoint_2M, threepoint_threshold, threepoint_max_iter)
+        new_camera_matrix, identical_points = ThreePoint(initial_matches, next_matches, initial_inlinear, initial_point, next_camerapoint_2M, threepoint_threshold, threepoint_max_iter)
         
         next_point, next_color, next_point3d_idx = Triangulation_G(images[Second], next_camerapoint_1M, next_camerapoint_2M, next_keypoint_1M, next_keypoint_2M, new_camera_matrix, initial_camera_matrix)
 
@@ -100,6 +101,7 @@ def main():
         all_camera_matrix.append(new_camera_matrix)
         all_keypoint1.append(next_keypoint_1M)
         all_keypoint2.append(next_keypoint_2M)
+        all_identical_points.append(identical_points)
         
         Points_visual(all_points, all_colors, all_point3d_idx, all_keypoint1, "Before_Bundle")
 
@@ -111,7 +113,7 @@ def main():
         initial_matches = next_matches
 
     print('---------------------#6 Bundle Adjustment---------------------')
-    new_all_points = Bundle(all_points, all_point3d_idx, all_camera_matrix, all_keypoint1, all_keypoint2, K)
+    new_all_points = Bundle(all_points, all_point3d_idx, all_camera_matrix, all_keypoint1, all_keypoint2, all_identical_points, K)
 
     Points_visual(new_all_points, all_colors, all_point3d_idx, all_keypoint1, "After_Bundle")
     
