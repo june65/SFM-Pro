@@ -6,7 +6,7 @@ from feature_extraction import SIFT
 from feature_matching import BF, FLANN
 from essential_matrix import FivePoint, CameraMatrix
 from triangulation import Triangulation, Triangulation_G, Points_visual
-from growing_step import ThreePoint, Bundle
+from growing_step import ThreePoint, Bundle, Noise_Bundle
 parser = argparse.ArgumentParser()
 
 #Data parameters
@@ -79,9 +79,12 @@ def main():
     all_camera_matrix.append(initial_camera_matrix)
     all_keypoint1.append(keypoint_1M)
     all_keypoint2.append(keypoint_2M)
-
+    '''
+    new_all_points = Noise_Bundle(all_points, all_point3d_idx, all_camera_matrix, all_keypoint1, all_keypoint2, all_identical_points, K)
+    Points_visual(new_all_points, all_colors, all_point3d_idx, all_keypoint1, "After_Bundle_noise")
+    '''
     print('---------------------#5 ThreePoint Algorithm---------------------')
-    orders = [4,5]
+    orders = [4]
     
     for Third in orders:
         print('Matched images :', {Second,Third})
@@ -114,9 +117,8 @@ def main():
 
     print('---------------------#6 Bundle Adjustment---------------------')
     new_all_points = Bundle(all_points, all_point3d_idx, all_camera_matrix, all_keypoint1, all_keypoint2, all_identical_points, K)
-
     Points_visual(new_all_points, all_colors, all_point3d_idx, all_keypoint1, "After_Bundle")
-    
+        
 
 
 if __name__ == "__main__":

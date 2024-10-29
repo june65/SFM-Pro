@@ -37,13 +37,18 @@ def Triangulation(image_1, camerapoint_1M, camerapoint_2M, keypoint_1M, keypoint
             if point[2]>5 and point[2]<10 and (result_camera@point.T)[2]>1 and (result_camera@point.T)[2]<10:
 
                 points.append(point[:3])
+                
                 color = image_1[int(keypoint_1M[k][1]), int(keypoint_1M[k][0])]
                 colors.append(color)
                 new_inlinear.append(inlinear[k])
                 initial_point3d_idx.append(k)
 
     print('3D Inlinear Number :',len(points))
-    
+    '''
+    #Noise_Bundle random noise 
+    sigma = 0.1
+    points = [point + np.random.normal(0, sigma, size=3) for point in points]
+    '''
     points = np.array(points)
     colors = np.array(colors)
     new_inlinear = np.array(new_inlinear)
