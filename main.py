@@ -5,7 +5,7 @@ from utils import ImageLoader
 from feature_extraction import SIFT
 from feature_matching import BF, FLANN
 from essential_matrix import FivePoint, CameraMatrix
-from triangulation import Triangulation, Triangulation_G, Points_visual
+from triangulation import Triangulation, Triangulation_G, Points_visual, Save_Camera
 from growing_step import ThreePoint, Bundle, Noise_Bundle
 parser = argparse.ArgumentParser()
 
@@ -38,11 +38,13 @@ def main():
     fivepoint_max_iter = 2000
 
     #Growing Step
-    threepoint_threshold = 5.0e-4
+    threepoint_threshold = 2.0e-8
     threepoint_max_iter = 2000
+    triangulation_threshold_E = 2.0e-4
+    triangulation_threshold = 1 #2.0e-1
     
     print('---------------------#0 Feature Extraction---------------------')
-    for i in tqdm(range(11)):
+    for i in tqdm(range(10)):
         images.append(imageset[i])
         keypoint, descriptor =SIFT(images[i])
         keypoints.append(keypoint)
@@ -56,8 +58,8 @@ def main():
     all_keypoint2 = []
     all_identical_points = []
 
-    First = 2
-    Second = 3
+    First = 3
+    Second = 4
     print('---------------------#1 Feature Matching---------------------')
     if Matching_method == "FLANN":
         initial_matches, keypoint_1M, keypoint_2M, camerapoint_1M, camerapoint_2M = FLANN(Matching_method, keypoints[First], keypoints[Second], descriptors[First], descriptors[Second], images[First], images[Second], K_inv)
@@ -79,15 +81,19 @@ def main():
     all_camera_matrix.append(initial_camera_matrix)
     all_keypoint1.append(keypoint_1M)
     all_keypoint2.append(keypoint_2M)
+
+    #all_points, all_camera_matrix = Noise_Bundle(all_points, all_point3d_idx, all_camera_matrix, all_keypoint1, all_keypoint2, all_identical_points, K)
     '''
-    new_all_points = Noise_Bundle(all_points, all_point3d_idx, all_camera_matrix, all_keypoint1, all_keypoint2, all_identical_points, K)
+    new_all_points, new_camera_points = Noise_Bundle(all_points, all_point3d_idx, all_camera_matrix, all_keypoint1, all_keypoint2, all_identical_points, K)
     Points_visual(new_all_points, all_colors, all_point3d_idx, all_keypoint1, "After_Bundle_noise")
     '''
     print('---------------------#5 ThreePoint Algorithm---------------------')
-    orders = [4]
     
+    #orders = [7,5,3,1,17,19,21,23,25,27,29]
+    orders = [5,6,7,8,9,10]
+    #orders = [2,1,0,16,17,18,19,20,21]
     for Third in orders:
-        print('Matched images :', {Second,Third})
+        print('Matched images :', Second,Third)
         
         if Matching_method == "FLANN":
             next_matches, next_keypoint_1M, next_keypoint_2M, next_camerapoint_1M, next_camerapoint_2M = FLANN(Matching_method, keypoints[Second], keypoints[Third], descriptors[Second], descriptors[Third], images[Second], images[Third], K_inv)
@@ -96,8 +102,8 @@ def main():
         
         new_camera_matrix, identical_points = ThreePoint(initial_matches, next_matches, initial_inlinear, initial_point, next_camerapoint_2M, threepoint_threshold, threepoint_max_iter)
         
-        next_point, next_color, next_point3d_idx = Triangulation_G(images[Second], next_camerapoint_1M, next_camerapoint_2M, next_keypoint_1M, next_keypoint_2M, new_camera_matrix, initial_camera_matrix)
-
+        next_point, next_color, next_point3d_idx = Triangulation_G(images[Second], next_camerapoint_1M, next_camerapoint_2M, next_keypoint_1M, next_keypoint_2M, new_camera_matrix, initial_camera_matrix, triangulation_threshold_E, triangulation_threshold)
+        
         all_points.append(next_point)
         all_colors.append(next_color)
         all_point3d_idx.append(next_point3d_idx)
@@ -115,10 +121,14 @@ def main():
         initial_camera_matrix = new_camera_matrix
         initial_matches = next_matches
 
-    print('---------------------#6 Bundle Adjustment---------------------')
-    new_all_points = Bundle(all_points, all_point3d_idx, all_camera_matrix, all_keypoint1, all_keypoint2, all_identical_points, K)
-    Points_visual(new_all_points, all_colors, all_point3d_idx, all_keypoint1, "After_Bundle")
-        
+        print('---------------------#6 Bundle Adjustment---------------------')
+        all_points, all_camera_matrix = Bundle(all_points, all_point3d_idx, all_camera_matrix, all_keypoint1, all_keypoint2, all_identical_points, K)
+        Save_Camera(all_camera_matrix)
+        Points_visual(all_points, all_colors, all_point3d_idx, all_keypoint1, "After_Bundle")
+    
+    Save_Camera(all_camera_matrix)
+    
+    Points_visual(all_points, all_colors, all_point3d_idx, all_keypoint1, "multi_view_keypoints")
 
 
 if __name__ == "__main__":

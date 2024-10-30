@@ -45,6 +45,12 @@ ply_output_path_three_views = './result/three_view_keypoints.ply'
 points_three_views, colors_three_views = load_point_cloud_from_csv(csv_path_three_views)
 save_point_cloud_as_ply(points_three_views, colors_three_views, ply_output_path_three_views)
 
+csv_path_multi_views = './result/multi_view_keypoints.csv'
+ply_output_path_multi_views = './result/multi_view_keypoints.ply'
+
+points_multi_views, colors_multi_views = load_point_cloud_from_csv(csv_path_multi_views)
+save_point_cloud_as_ply(points_multi_views, colors_multi_views, ply_output_path_multi_views)
+
 csv_path_Before_Bundle = './result/Before_Bundle.csv'
 ply_output_path_Before_Bundle = './result/Before_Bundle.ply'
 

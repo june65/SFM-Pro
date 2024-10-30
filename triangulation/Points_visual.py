@@ -17,7 +17,7 @@ def Points_visual(all_points, all_colors, all_point3d_idx, all_keypoint1, filena
         
     zero_point = np.array(zero_point)
     zero_color = np.array(zero_color)
-
+    
     point_cloud = np.concatenate((zero_point, zero_color), axis=1)
     point_cloud = np.concatenate((point_cloud, zero_point3d_idx.reshape(-1, 1)), axis=1)
     df = pd.DataFrame(point_cloud, columns=['x','y','z','r', 'g', 'b','inlinear_idx'])
