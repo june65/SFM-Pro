@@ -10,7 +10,7 @@ from growing_step import ThreePoint, Bundle, Noise_Bundle
 parser = argparse.ArgumentParser()
 
 #Data parameters
-parser.add_argument('--dataset', default='data_30_copy', help='data name')
+parser.add_argument('--dataset', default='mydata2', help='data name')
 
 args = parser.parse_args()
 
@@ -30,7 +30,7 @@ def main():
 
     #Feature Matching
     Matching_method = "KNN" #NORM, KNN, FLANN
-    threshold_knn = 0.55 #0.85 
+    threshold_knn = 0.75 #0.85 
     kdtree_flann = 1
 
     #Essential Matrix
@@ -44,7 +44,7 @@ def main():
     triangulation_threshold = 1 #2.0e-1
     
     print('---------------------#0 Feature Extraction---------------------')
-    for i in tqdm(range(32)):
+    for i in tqdm(range(5)):
         images.append(imageset[i])
         keypoint, descriptor =SIFT(images[i])
         keypoints.append(keypoint)
@@ -60,8 +60,8 @@ def main():
 
     #First = 31
     #Second = 30
-    First = 31
-    Second = 30
+    First = 0
+    Second = 1
 
     print('---------------------#1 Feature Matching---------------------')
     if Matching_method == "FLANN":
@@ -91,9 +91,7 @@ def main():
     
     print('---------------------#5 ThreePoint Algorithm---------------------')
     
-    orders = [29,28,27,26,25,24,23,22,21,20,19,18,17,16,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
-    #orders = [5,7,9,11,13,15,14,12,10,8,6,2,0,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]
-    #orders = [5,6]
+    orders = [2,3,4]
     for Third in orders:
         print('Matched images :', Second,Third)
         
