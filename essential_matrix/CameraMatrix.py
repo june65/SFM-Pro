@@ -1,4 +1,5 @@
 import numpy as np
+import subprocess
 
 def CameraMatrix(fundamental_matrix, camerapoint_1M, camerapoint_2M, inlinear_TF):
 
@@ -47,10 +48,12 @@ def CameraMatrix(fundamental_matrix, camerapoint_1M, camerapoint_2M, inlinear_TF
                     camera_num += 1
 
         if camera_num > max_camera_num:
-            max_camera_num = camera_num
-            max_camera = camera
+            if camera[0,0] > 0:
+                max_camera_num = camera_num
+                max_camera = camera
 
     print('Camera Matrix :', max_camera)
     print('Inlinear Number :', max_camera_num)
-
+    if len(max_camera) == 0:
+        subprocess.run(["c:/venv/SFMpro2/Scripts/python.exe", "c:/D_project/SFM-Pro/main.py"])
     return max_camera

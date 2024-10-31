@@ -41,6 +41,7 @@ def Triangulation(image_1, camerapoint_1M, camerapoint_2M, keypoint_1M, keypoint
                 points.append(point[:3])
                 
                 color = image_1[int(keypoint_1M[k][1]), int(keypoint_1M[k][0])]
+                #colors.append([255,255,255])
                 colors.append(color)
                 new_inlinear.append(inlinear[k])
                 initial_point3d_idx.append(k)
@@ -48,7 +49,7 @@ def Triangulation(image_1, camerapoint_1M, camerapoint_2M, keypoint_1M, keypoint
     print('3D Inlinear Number :',len(points))
     '''
     #Noise_Bundle random noise 
-    sigma = 0.1
+    sigma = 1
     points = [point + np.random.normal(0, sigma, size=3) for point in points]
     '''
     points = np.array(points)
@@ -149,7 +150,7 @@ def Triangulation_G(image_1, camerapoint_1M, camerapoint_2M, keypoint_1M, keypoi
     '''
     '''
     #Noise_Bundle random noise 
-    sigma = 0.1
+    sigma = 1
     points = [point + np.random.normal(0, sigma, size=3) for point in points]
     '''
     points = np.array(points)

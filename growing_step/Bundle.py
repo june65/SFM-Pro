@@ -22,33 +22,22 @@ def Bundle(all_points, all_point3d_idx, all_camera_matrix, all_keypoint1, all_ke
             if i>0: 
                 if index in all_identical_points[i-1][:,1].tolist():
                     point_index = all_identical_points[i-1][:,1].tolist().index(index)
-                    matched_point = all_xidx[-1][0][all_identical_points[i-1][point_index][0]]
+                    matched_point = all_xidx[-1][all_identical_points[i-1][point_index][0]]
                     if matched_point != -1:
                         if not matched_point in flat_samegroup:
                             samegroup.append([matched_point, np.int64(j + number_idx + 1)])
                         else :
                             for row in samegroup:
-                                if index in row:
+                                if matched_point in row:
                                     row.append(np.int64(j + number_idx + 1))
             x_idx[index] = j + number_idx + 1
-        x_idx = np.array(x_idx).reshape(1, -1)
         all_xidx.append(x_idx)
         number_idx += len(all_point3d_idx[i])
         
     if samegroup != []:
         flat_samegroup = [item for sublist in samegroup for item in sublist]
         flat_samegroup = np.array(flat_samegroup)
-    #### 초기 설정
-    x = np.array([])
-    for i in range(len(all_camera_matrix)):
-        R = all_camera_matrix[i][:, :3]
-        t = all_camera_matrix[i][:, 3]
-        rvec, _ = cv2.Rodrigues(R)
-        rvec = rvec.flatten()
-        t = t.flatten()
-        camera_vec = np.concatenate((rvec, t))
-        x = np.concatenate((x, camera_vec))
-
+    
     
     total_3dpoint_num = 0 #전체 3d points 수
     for i in range(len(all_point3d_idx)):
@@ -65,6 +54,17 @@ def Bundle(all_points, all_point3d_idx, all_camera_matrix, all_keypoint1, all_ke
                     if min(row) != flag:
                         change_3d.remove(flag)
                         remake_3d[i] = min(row)
+
+    #### 초기 설정
+    x = np.array([])
+    for i in range(len(all_camera_matrix)):
+        R = all_camera_matrix[i][:, :3]
+        t = all_camera_matrix[i][:, 3]
+        rvec, _ = cv2.Rodrigues(R)
+        rvec = rvec.flatten()
+        t = t.flatten()
+        camera_vec = np.concatenate((rvec, t))
+        x = np.concatenate((x, camera_vec))
 
     number_idx = 0
     for i in range(len(all_points)):
@@ -87,7 +87,7 @@ def Bundle(all_points, all_point3d_idx, all_camera_matrix, all_keypoint1, all_ke
         x_idx = [-1 for _ in range(len(all_keypoint1[i]))]
         for j, index in enumerate(all_point3d_idx[i]):
             flag = j + number_idx + 1
-            if flag in flat_samegroup:
+            if flag in flat_samegroup and i!=0:
                 for row in samegroup:
                     if flag in row:
                         x_idx[index] = int(change_3d.index(min(row))) + 1
@@ -106,7 +106,7 @@ def Bundle(all_points, all_point3d_idx, all_camera_matrix, all_keypoint1, all_ke
         x_idx = [-1 for _ in range(len(all_keypoint2[i]))]
         for j, index in enumerate(all_point3d_idx[i]):
             flag = j + number_idx + 1
-            if flag in flat_samegroup:
+            if flag in flat_samegroup and i!=0:
                 for row in samegroup:
                     if flag in row:
                         x_idx[index] = int(change_3d.index(min(row))) + 1
@@ -134,8 +134,8 @@ def Bundle(all_points, all_point3d_idx, all_camera_matrix, all_keypoint1, all_ke
     K_matlab = matlab.double(K)
     param = eng.struct({'uv': uv_matlab, 'K': K_matlab})
     param['nX'] = len(x) - 6 * len(all_camera_matrix)
-    param['key1'] = 1
-    param['key2']  = 2
+    param['key1'] = 2 #len(all_camera_matrix)-2 #고정 카메라
+    param['key2']  = 0 #사용X
     param['optimization'] = 1
     param['dof_remove'] = 0
 
@@ -181,7 +181,7 @@ def Noise_Bundle(all_points, all_point3d_idx, all_camera_matrix, all_keypoint1, 
     for i in range(len(all_points)):
         point3d_vec = all_points[i].flatten()
         x = np.concatenate((x, point3d_vec))
-
+    
     keypoint1_vecs = []
     number_idx = 0
     for i in range(len(all_keypoint1)):
@@ -239,6 +239,7 @@ def Noise_Bundle(all_points, all_point3d_idx, all_camera_matrix, all_keypoint1, 
     for i in range(len(all_points)):
         length = len(all_points[i])
         new_points.append(x_BApoint[start_idx:start_idx + length])
+        start_idx += len(all_points[i])
 
     new_camera_matrices = []
     for i in range(len(all_camera_matrix)):

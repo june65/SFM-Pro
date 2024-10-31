@@ -62,3 +62,16 @@ ply_output_path_After_Bundle = './result/After_Bundle.ply'
 
 points_After_Bundle, colors_After_Bundle = load_point_cloud_from_csv(csv_path_After_Bundle)
 save_point_cloud_as_ply(points_After_Bundle, colors_After_Bundle, ply_output_path_After_Bundle)
+'''
+csv_path_Before_Bundle_noise = './result/Before_Bundle_noise.csv'
+ply_output_path_Before_Bundle_noise = './result/Before_Bundle_noise.ply'
+
+points_Before_Bundle_noise, colors_Before_Bundle_noise = load_point_cloud_from_csv(csv_path_Before_Bundle_noise)
+save_point_cloud_as_ply(points_Before_Bundle_noise, colors_Before_Bundle_noise, ply_output_path_Before_Bundle_noise)
+
+csv_path_After_Bundle_noise = './result/After_Bundle_noise.csv'
+ply_output_path_After_Bundle_noise = './result/After_Bundle_noise.ply'
+
+points_After_Bundle_noise, colors_After_Bundle_noise = load_point_cloud_from_csv(csv_path_After_Bundle_noise)
+save_point_cloud_as_ply(points_After_Bundle_noise, colors_After_Bundle_noise, ply_output_path_After_Bundle_noise)
+'''
