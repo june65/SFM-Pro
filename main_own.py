@@ -58,8 +58,6 @@ def main():
     all_keypoint2 = []
     all_identical_points = []
 
-    #First = 31
-    #Second = 30
     First = 0
     Second = 1
 
@@ -84,10 +82,6 @@ def main():
     all_camera_matrix.append(initial_camera_matrix)
     all_keypoint1.append(keypoint_1M)
     all_keypoint2.append(keypoint_2M)
-
-    #Points_visual(all_points, all_colors, all_point3d_idx, all_keypoint1, "Before_Bundle_noise")
-    #new_all_points, new_camera_points = Noise_Bundle(all_points, all_point3d_idx, all_camera_matrix, all_keypoint1, all_keypoint2, all_identical_points, K)
-    #Points_visual(new_all_points, all_colors, all_point3d_idx, all_keypoint1, "After_Bundle_noise")
     
     print('---------------------#5 ThreePoint Algorithm---------------------')
     

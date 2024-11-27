@@ -36,8 +36,9 @@ def Triangulation(image_1, camerapoint_1M, camerapoint_2M, keypoint_1M, keypoint
             point = point_vector[-1, :] 
             point /= point[-1]
 
-            if point[2]>5 and point[2]<10 and (result_camera@point.T)[2]>1 and (result_camera@point.T)[2]<10:
-
+            if point[2]>1 and point[2]<10 and (result_camera@point.T)[2]>1 and (result_camera@point.T)[2]<10:
+            #if point[2]>1 and point[2]<50 and (result_camera@point.T)[2]>1 and (result_camera@point.T)[2]<50:
+            #if point[2]>1 and (result_camera@point.T)[2]>1:
                 points.append(point[:3])
                 
                 color = image_1[int(keypoint_1M[k][1]), int(keypoint_1M[k][0])]
@@ -134,7 +135,9 @@ def Triangulation_G(image_1, camerapoint_1M, camerapoint_2M, keypoint_1M, keypoi
             point = point_vector[-1, :] 
             point /= point[-1]
 
-            if point[2]>5 and point[2]<10 and (result_camera@point.T)[2]>1 and (result_camera@point.T)[2]<10:
+            if point[2]>1 and point[2]<15 and (result_camera@point.T)[2]>1 and (result_camera@point.T)[2]<15:
+            #if point[2]>1 and point[2]<50 and (result_camera@point.T)[2]>1 and (result_camera@point.T)[2]<50:
+            #if point[2]>1 and (result_camera@point.T)[2]>1:
                 error = np.sum((camerapoint_2M[:2, k] - point[:2])**2)
                 if error < threshold_2:
                     points.append(point[:3])

@@ -3,8 +3,14 @@ import cv2
 from utils import RGB_to_gray
 
 def SIFT(image):
-    sift = cv2.SIFT_create(contrastThreshold=0.01, edgeThreshold=10)
+    sift = cv2.SIFT_create()#contrastThreshold=0.01, edgeThreshold=10)
     keypoint, descriptor = sift.detectAndCompute(image, None)
+    '''
+    image_keypoints = cv2.drawKeypoints(image, keypoint, None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+    cv2.imshow("SIFT Keypoints", image_keypoints)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    '''
     return keypoint, descriptor
 
 '''

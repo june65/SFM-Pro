@@ -1,8 +1,9 @@
 import argparse
 import numpy as np
+import csv
 from tqdm import tqdm
 from utils import ImageLoader
-from feature_extraction import SIFT
+from feature_extraction import SIFT, ORB
 from feature_matching import BF, FLANN
 from essential_matrix import FivePoint, CameraMatrix
 from triangulation import Triangulation, Triangulation_G, Points_visual, Save_Camera
@@ -25,14 +26,15 @@ def main():
     K_inv = np.linalg.inv(K)
 
     #Feature Extraction
+    Extraction_method = "SIFT" #SIFT, ORB
     keypoints = []
     descriptors = []
 
     #Feature Matching
     Matching_method = "KNN" #NORM, KNN, FLANN
-    threshold_knn = 0.55 #0.85 
+    threshold_knn = 0.55
     kdtree_flann = 1
-
+    
     #Essential Matrix
     fivepoint_threshold = 2.0e-4
     fivepoint_max_iter = 2000
@@ -41,7 +43,7 @@ def main():
     threepoint_threshold = 2.0e-8
     threepoint_max_iter = 2000
     triangulation_threshold_E = 2.0e-4
-    triangulation_threshold = 1 #2.0e-1
+    triangulation_threshold = 1#2.0e-2
     
     print('---------------------#0 Feature Extraction---------------------')
     for i in tqdm(range(32)):
@@ -49,6 +51,14 @@ def main():
         keypoint, descriptor =SIFT(images[i])
         keypoints.append(keypoint)
         descriptors.append(descriptor)
+
+    match_results = []
+
+    with open('matches_list.csv', mode='r') as file:
+        reader = csv.reader(file)
+        next(reader)
+        for row in reader:
+            match_results.append((int(row[0]), int(row[1]), int(row[2])))
 
     all_points = []
     all_colors = []
@@ -58,10 +68,25 @@ def main():
     all_keypoint2 = []
     all_identical_points = []
 
-    #First = 31
-    #Second = 30
-    First = 31
-    Second = 30
+    orders = [12, 11]
+    
+    First = orders[0]
+    Second = orders[1]
+    #First = 15
+    #Second = 14
+    #First = 3
+    #Second = 4
+    '''
+    flag = Second
+    while len(orders) < 30:
+        for index1, index2, match_count in match_results:
+            if index1 == flag and index2 not in orders:
+                orders.append(index2)
+                flag = index2
+                break
+    orders = orders[2:]
+    print(orders)
+    '''
 
     print('---------------------#1 Feature Matching---------------------')
     if Matching_method == "FLANN":
@@ -91,9 +116,9 @@ def main():
     
     print('---------------------#5 ThreePoint Algorithm---------------------')
     
-    orders = [29,28,27,26,25,24,23,22,21,20,19,18,17,16,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
-    #orders = [5,7,9,11,13,15,14,12,10,8,6,2,0,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]
-    #orders = [5,6]
+    orders = [29,28,27,26,25,24,23,22,20,19,18,17,16,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+    #orders = [5,7,9,11,13,15,14,12,10,8,6,2,0,16,17,18,19,20,22,23,24,25,26,27,28,29,30,31]
+    orders = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 16, 17, 18, 19, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
     for Third in orders:
         print('Matched images :', Second,Third)
         
